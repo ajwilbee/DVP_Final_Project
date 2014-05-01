@@ -1,4 +1,4 @@
-function [ imGMM,foregroundimage, meanimage ] = update( im , imGMM,K,alpha,T,Sigma,priorWeight)
+function [ imGMM,foregroundimage, meanimage, mask ] = update( im , imGMM,K,alpha,T,Sigma,priorWeight)
 %update for the next frame check all of the pixels again against their
 %gaussians and find the matches and update.
 % T is the weight threshold indicating the ammount of information that the
@@ -6,6 +6,7 @@ function [ imGMM,foregroundimage, meanimage ] = update( im , imGMM,K,alpha,T,Sig
 %   Detailed explanation goes here
 foregroundimage = im;
 meanimage = zeros(size(im));
+mask = ones(size(im,1),size(im,2));
 for row = 1:size(im,1)
     for col = 1:size(im,2)
         GMM = imGMM{row,col};
@@ -75,7 +76,7 @@ for row = 1:size(im,1)
            if(permute(im(row,col,:),[3 2 1])<(GMM{z}.mu+2.5*GMM{z}.sigma(1,1)) )
                if (permute(im(row,col,:),[3 2 1])>(GMM{z}.mu-2.5*GMM{z}.sigma(1,1)))
                     foregroundimage(row,col,:) = [0 0 0];%zeros(size(im,3));
-                   
+                   mask(row,col) = 0;
                end
            end
         end
