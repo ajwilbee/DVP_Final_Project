@@ -1,4 +1,4 @@
-function [colorObjects] = Object_SubArray_Extraction(mask,colorMask)
+function [colorObjects,groupings] = Object_SubArray_Extraction(mask,colorMask)
 
 % takes in a color foreground image and the forground mask and finds the
 % image sub arrays and returns them to be used as cross corrilation filters
