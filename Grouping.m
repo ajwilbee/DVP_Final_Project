@@ -117,7 +117,7 @@ for x = 1: length(map)
        %fmcount = fmcount+1;
     end
 end
-
+    cm = cm(2:end-1,2:end-1);% take away padding
     finalmap =  sort(finalmap,'ascend');
     diffTest = diff(finalmap);
     finalmap(2:end) = finalmap(2:end).*~(diffTest == 0); 

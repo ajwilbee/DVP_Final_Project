@@ -1,0 +1,4 @@
+use the normalized cross corrilation to find the matching image, this is done 
+by taking the desired sub image (obtained from my region analysis) and sweeping it through
+the whole image, the highest points are the likely matches, the closest point is the 
+match

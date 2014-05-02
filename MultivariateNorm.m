@@ -1,5 +1,5 @@
 % now get it ready to itterate over the whole movie
-Vread = VideoReader('DB_RS.mp4');
+Vread = VideoReader('No_Mirror.mp4');
 
     nFrames = Vread.NumberOfFrames;
     vidHeight = Vread.Height;
@@ -9,7 +9,7 @@ Vread = VideoReader('DB_RS.mp4');
     mov2(1:nFrames) = struct('cdata',zeros(vidHeight,vidWidth,3,'uint8'),...
        'colormap',[]); 
    
-    mov3(1:nFrames) = struct('cdata',zeros(vidHeight,vidWidth,3,'uint8'),...
+    mov3(1:nFrames) = struct('cdata',zeros(vidHeight,vidWidth,1,'uint8'),...
        'colormap',[]); 
 
 im1 = read(Vread,1);
@@ -38,14 +38,16 @@ for k = 1 : nFrames-1
         imshow(uint8(muim));
         figure(4)
         imshow(uint8(mask*255));
+        %mask = cat(3,mask,mask,mask);
         mov(k).cdata = uint8(imout);
         mov2(k).cdata = uint8(muim);
-        mov3(k).data = uint8(mask*255);
+        mov3(k).cdata = uint8(mask);
 end
 temp = Vread.FrameRate;
 movie(mov,1,temp);
 movie(mov2,1,temp);
-movie(mov3,1,temp);
+save('No_Mirror','mov','mov2','mov3','Sigma','alpha','temp');
+%movie(mov3,1,temp);
 % 
 % k = 40;
 % im = read(Vread,k);
