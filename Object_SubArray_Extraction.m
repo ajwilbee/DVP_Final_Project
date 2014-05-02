@@ -53,7 +53,7 @@ for x = 1: length(map)
             end
             test(removelist) = [];
             temp = cell2mat(test);
-            temp = impyramid(temp,'reduce'); % make it so that scale is not an issue
+            %temp = impyramid(temp,'reduce'); % make it so that scale is not an issue
             colorimage{dim} = temp;
 %             colorimage
 %             
@@ -61,7 +61,7 @@ for x = 1: length(map)
         
         CI = cat(3,colorimage{1},colorimage{2},colorimage{3});
         colorObjects{x} = CI;
-        figure, imshow(CI);
+%         figure, imshow(CI);
     end
 
 end
