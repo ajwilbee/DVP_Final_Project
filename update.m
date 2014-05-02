@@ -4,6 +4,10 @@ function [ imGMM,foregroundimage, meanimage, mask ] = update( im , imGMM,K,alpha
 % T is the weight threshold indicating the ammount of information that the
 % background must hold.
 %   Detailed explanation goes here
+%   
+% figure out the knobs to turn to vary how fast the foreground goes to
+% background and vice versa
+
 foregroundimage = im;
 meanimage = zeros(size(im));
 mask = ones(size(im,1),size(im,2));
