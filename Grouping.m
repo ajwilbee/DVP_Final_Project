@@ -118,9 +118,11 @@ for x = 1: length(map)
     end
 end
     cm = cm(2:end-1,2:end-1);% take away padding
+    if(length(finalmap) > 1)
     finalmap =  sort(finalmap,'ascend');
     diffTest = diff(finalmap);
-    finalmap(2:end) = finalmap(2:end).*~(diffTest == 0); 
+    finalmap(2:end) = finalmap(2:end).*~(diffTest == 0);
+    end
     finalmap = finalmap(finalmap~=0);
 % segmentIm = uint8(zeros(size(im,1),size(im,2),3));
 % for x = 1:length(finalmap)

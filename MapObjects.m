@@ -6,7 +6,7 @@ function [ transitionholder,groupingsHolder,colorMapHolder ] = MapObjects( currC
 % : mapped objects, new objects, and objects that have left
 numberOfObjects = length(map)+length(unmappedObjects)+length(missingObjects);
 transitionholder = cell(numberOfObjects,1);
-colorMapHolder = {[]};
+colorMapHolder = cell(length(colorMap),1);
 groupingsHolder = cell(numberOfObjects,1);
 %% here is where the bounding box and counting will be created and updated
 % order the objects according to the apropriot mapping
@@ -19,13 +19,13 @@ for x = 1:length(map)
    
     transitionholder{map{x}(1)} = currColorObjects{map{x}(2)}; 
     groupingsHolder{map{x}(1)} = currgroupings{map{x}(2)};
-    
+    colorMapHolder{map{x}(1)} = colorMap{map{x}(2)};
     
 end
 counter  = 1;
 % go to the end and add the extra objects
 if(length(map)+length(missingObjects)<numberOfObjects)
-    for x = length(map)+length(missingObjects):numberOfObjects
+    for x = length(map)+length(missingObjects)+1:numberOfObjects
         transitionholder{x} = currColorObjects{unmappedObjects(counter)};
         groupingsHolder{x} = currgroupings{unmappedObjects(counter)};
         counter = counter + 1;

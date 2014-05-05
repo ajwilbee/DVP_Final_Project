@@ -2,13 +2,11 @@
 % load the movie to be worked on
 load('dissolve.mat')
 close all
-imMask = mov3(30).cdata;
-imColor = mov(30).cdata;
+imMask = mov3(1).cdata;
+imColor = mov(1).cdata;
 [prevColorObjects,prevgroupings] = Object_SubArray_Extraction(imMask,imColor);
 [currColorObjects,currgroupings] = Object_SubArray_Extraction(imMask,imColor);
-boxedImage = imColor;
-boxColor = [uint8(rand()*255),uint8(rand()*255),uint8(rand()*255)];
-[boxedImage] = DrawBoundingBox( boxedImage, prevgroupings{1},boxColor );
+
 
 [ map,unmappedObjects,missingObjects ] = objectCorrilation( prevColorObjects, currColorObjects );
 initialize = 1;
@@ -17,10 +15,31 @@ colorMap = {[]};
 
 for x = 1:length(prevColorObjects)
    
-    figure, imshow(prevColorObjects{x});
-    figure, imshow(prevgroupings{x});
+%     figure(1), imshow(prevColorObjects{x});
+%     figure(2), imshow(prevgroupings{x});
     [ imColor ] = DrawBoundingBox( imColor, prevgroupings{x},colorMap{x} );
 end
-figure, imshow(imColor);
+% figure(3), imshow(imColor);
 initialize = 0;
+for k = 1:length(mov)-1
+    
+    imMask = mov3(k).cdata;
+    imColor = mov(k).cdata;
+if k ==62
+   disp(62) 
+end
+    [currColorObjects,currgroupings] = Object_SubArray_Extraction(imMask,imColor);
+
+    
+    [ map,unmappedObjects,missingObjects ] = objectCorrilation( prevColorObjects, currColorObjects );
+    [ prevColorObjects,prevgroupings,colorMap ] = MapObjects( currColorObjects,currgroupings,map,unmappedObjects,missingObjects,colorMap,initialize);
+    for x = 1:length(prevColorObjects)
+   
+%     figure(4), imshow(prevColorObjects{x});
+%     figure(5), imshow(prevgroupings{x});
+    [ imColor ] = DrawBoundingBox( imColor, prevgroupings{x},colorMap{x} );
+    figure(6)
+    imshow(imColor);
+    end
+end
 

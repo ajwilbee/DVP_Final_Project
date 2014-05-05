@@ -37,7 +37,11 @@ for x = 1:length(prevColorObjects)
 
             end
             
+           if(~range(temp(1: tempMaxX,1: tempMaxY,dim)))
+              temp(1,1) = temp(1,1)+1; 
+           end
             corrilations{x,y,dim} =  normxcorr2(temp(1: tempMaxX,1: tempMaxY,dim),currColorObjects{y}(:,:,dim));
+            
             % will not be the same location  each time, may need to force
             % it if things break look here
             % key Word Broken
@@ -52,6 +56,9 @@ for x = 1:length(prevColorObjects)
         map{x} = [x mappingIndex];
     end
 end
+
+% check to ensure no duplicate matches and no empty maps
+map(cellfun(@isempty,map)) = [];
 
 end
 

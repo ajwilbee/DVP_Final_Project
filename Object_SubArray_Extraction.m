@@ -8,7 +8,7 @@ function [colorObjects,groupings] = Object_SubArray_Extraction(mask,colorMask)
 
 groupings = cell(length(map),1);
 colorObjects = cell(length(map),1);
-cellremovelist = 0;
+cellremovelist = [];
 cellRcounter = 1;
 Threshold = 15;
 for x = 1: length(map)
@@ -35,7 +35,7 @@ for x = 1: length(map)
                 rowLengths(row) = length(test{row});
             end
             rowLengths(rowLengths == 0) = [];
-            newBoxDimention = mean(rowLengths);
+            newBoxDimention = mean(rowLengths)-1;
             % make all the rows the same length
             removelist = 0;
             counter = 1;
@@ -43,8 +43,10 @@ for x = 1: length(map)
                 
                 if(length(test{row}) >= newBoxDimention)
                     l = length(test{row});
-                    offset = floor((l-newBoxDimention)/2);
-                    test{row} = test{row}(offset:offset+newBoxDimention);
+                    offset = ceil((l-newBoxDimention)/2);
+                    if(offset > 0)
+                        test{row} = test{row}(offset:offset+newBoxDimention-1);
+                    end
                 else
                     removelist(counter) = row;
                     counter = counter +1;
