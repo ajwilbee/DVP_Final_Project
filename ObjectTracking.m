@@ -25,7 +25,7 @@ for k = 1:length(mov)-1
     
     imMask = mov3(k).cdata;
     imColor = mov(k).cdata;
-if k ==62
+if k ==28
    disp(62) 
 end
     [currColorObjects,currgroupings] = Object_SubArray_Extraction(imMask,imColor);

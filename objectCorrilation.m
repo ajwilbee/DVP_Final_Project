@@ -53,12 +53,40 @@ for x = 1:length(prevColorObjects)
         mappingIndex = find(matchingLikelyhood == max(matchingLikelyhood));
         unmappedObjects(unmappedObjects == mappingIndex) = []; 
         missingObjects(missingObjects == x) = [];
-        map{x} = [x mappingIndex];
+        map{x} = [x mappingIndex max(matchingLikelyhood)];
     end
 end
 
-% check to ensure no duplicate matches and no empty maps
+% check to ensure  no empty maps
 map(cellfun(@isempty,map)) = [];
 
+%to ensure a strictly one to one relationship
+% for each current object find all of the previous objects it maps to if
+% there are more than one, find the strongest match an eliminate all others
+% for each eliminated match that is an object that is now missing in the
+% subsiquent frame and as such should be put on the missing object list
+% sort the list at the end
+for x = 1:length(currColorObjects)
+    counter = 1;
+    doubleMappedWeight = [];
+    doubleMapped = [];
+   for y = 1:length(map)
+       if(map{y}(2) == x)
+            doubleMappedWeight(counter) = map{y}(3);
+            doubleMapped(counter) = y;
+            counter = counter +1;
+       end
+   end
+   % find best match, take it off the list and remove all mapings that are
+   % still on the list, then put those mappings on the missing object list
+    bestMatch = find(doubleMappedWeight == max(doubleMappedWeight));
+    doubleMapped(bestMatch) = [];
+    map(doubleMapped) = [];
+    for y = 1:length(doubleMapped)
+       missingObjects(end+1) = doubleMapped(y); 
+    end
+end
+% sort the missing object list from 0-infinity
+sort(missingObjects,'ascend');
 end
 
