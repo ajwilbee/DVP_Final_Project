@@ -1,7 +1,9 @@
-function [cm,finalmap] = Grouping(im)
+function [cm,finalmap] = Grouping(im,strelDiameter)
 % this function will take in a binary logical mask of foreground pixels
 % and segment it into its groupings by doing a connected component analysis
-
+%
+% strelDiameter tells how large the closing radius is, this should be video
+% size dependant, set by user
 % returns the segmented image cm and the segment mapping numbers
 
 
@@ -13,7 +15,8 @@ function [cm,finalmap] = Grouping(im)
 %           0 1 1 1 0 0 0 1; ...
 %           0 1 0 0 0 1 1 1; ...
 %           0 0 0 0 0 0 0 0];
-se = strel('line',4,0);
+
+se = strel('disk',strelDiameter,0);%'line',4,0)
 imclosed = imclose(~im,se);
 
 % iterate row first then column
@@ -25,6 +28,7 @@ clear map
 map{1} = zeros(4,1);
 mapcount = 2;
 tester = ~imclosed;
+
 
 tester = padarray(tester,[1,1],'both');
 cm = zeros(size(tester));% component map
@@ -124,6 +128,7 @@ end
     finalmap(2:end) = finalmap(2:end).*~(diffTest == 0);
     end
     finalmap = finalmap(finalmap~=0);
+ 
 % segmentIm = uint8(zeros(size(im,1),size(im,2),3));
 % for x = 1:length(finalmap)
 %    temp = cm==finalmap(x);

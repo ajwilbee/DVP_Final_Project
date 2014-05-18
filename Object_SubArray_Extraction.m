@@ -1,16 +1,20 @@
-function [colorObjects,groupings] = Object_SubArray_Extraction(mask,colorMask)
+function [colorObjects,groupings] = Object_SubArray_Extraction(mask,colorMask,Threshold,strelDiameter)
 
 % takes in a color foreground image and the forground mask and finds the
 % image sub arrays and returns them to be used as cross corrilation filters
 % for object tracking
 
-[grouped, map]= Grouping(mask);
+%Threshold will say what is an unreasonably small size for the object
+
+[grouped, map]= Grouping(mask,strelDiameter);
 
 groupings = cell(length(map),1);
 colorObjects = cell(length(map),1);
 cellremovelist = [];
 cellRcounter = 1;
-Threshold = 15;
+
+finalrow = 0;
+finalcol = 0;
 for x = 1: length(map)
    
     % get a particular object
@@ -56,6 +60,41 @@ for x = 1: length(map)
             test(removelist) = [];
             temp = cell2mat(test);
             %temp = impyramid(temp,'reduce'); % make it so that scale is not an issue
+
+            
+            %force all color plane dimentions to be the same size
+            if dim == 1
+                [finalrow, finalcol] = size(temp);
+                
+            else
+                
+                if size(temp,1) < finalrow
+                    increaseby = finalrow - size(temp,1);
+                    
+                    for q = 1:increaseby
+                        tempvec = temp(end,:);
+                        temp = cat(1,temp,tempvec);
+                    end
+                end
+                if size(temp,1) > finalrow
+                   decreaseby = size(temp,1) - finalrow;
+                    temp = temp(1:end-decreaseby,:);
+                    
+                end
+                
+                if size(temp,2) < finalcol
+                    increaseby = finalcol - size(temp,2);
+                    for q = 1:increaseby
+                        tempvec = temp(:,end);
+                        temp = cat(2,temp,tempvec);
+                    end
+                end
+                if size(temp,2) > finalcol
+                    decreaseby = size(temp,2) - finalcol;
+                    temp = temp(:,1:end-decreaseby);
+                end
+                
+            end
             colorimage{dim} = temp;
 %             colorimage
 %             

@@ -6,6 +6,9 @@ function [ boxedImage ] = DrawBoundingBox( boxedImage, objectMask,boxColor )
 % displayed
 % -boxColor is the color the bounding box is to be drawn in
 
+%clean Input
+
+
 BB = regionprops(objectMask,'BoundingBox');
 BB = round(BB.BoundingBox);
 %BB(1:2) = BB(1:2)+1;

@@ -15,9 +15,11 @@ corrilations = cell(length(prevColorObjects),length(currColorObjects),3);
 map = cell(length(prevColorObjects),1);
 unmappedObjects = 1:1:length(currColorObjects);
 missingObjects = 1:1:length(prevColorObjects);
+matchingLikelyhood = zeros(length(prevColorObjects),length(currColorObjects));
+
 for x = 1:length(prevColorObjects)
     temp = prevColorObjects{x};
-    matchingLikelyhood = zeros(length(currColorObjects),1);
+   
     for y = 1: length(currColorObjects)
       
 %         figure(1),imshow(temp)
@@ -45,48 +47,81 @@ for x = 1:length(prevColorObjects)
             % will not be the same location  each time, may need to force
             % it if things break look here
             % key Word Broken
-            cumulativeCorrilation = cumulativeCorrilation + max(max(corrilations{x,y,dim}));
+            cumulativeCorrilation = cumulativeCorrilation + norm(corrilations{x,y,dim}); %max(max(corrilations{x,y,dim}))
         end
-        matchingLikelyhood(y) = cumulativeCorrilation;
+        matchingLikelyhood(x,y) = cumulativeCorrilation;
+        
     end
-    if(max(matchingLikelyhood) > 3*minCorrilation)
-        mappingIndex = find(matchingLikelyhood == max(matchingLikelyhood));
-        unmappedObjects(unmappedObjects == mappingIndex) = []; 
-        missingObjects(missingObjects == x) = [];
-        map{x} = [x mappingIndex max(matchingLikelyhood)];
+    
+    
+end
+% a corrilation weight matrix was created, rows are past objects colums are
+% current objects,
+
+% not sure if this method will give the correct mapping
+if length(prevColorObjects) > length(currColorObjects)
+     % highest weight in a column is the corrilating object,
+     % winning row is set to zero to preserve counting integrity
+     % so backwards from the other case
+    for x = 1:length(currColorObjects)
+        mappingIndex = find(matchingLikelyhood(:,x) == max(matchingLikelyhood(:,x)));
+        unmappedObjects(unmappedObjects == x) = []; 
+        missingObjects(missingObjects == mappingIndex) = [];
+        matchingLikelyhood(mappingIndex,:) = zeros(1,size(matchingLikelyhood,2));
+        map{x} = [mappingIndex x ];
     end
+
+else 
+     % highest weight in a row is the corrilating object,
+     % winning column is set to zero to preserve counting integrity
+        for x = 1:length(prevColorObjects)
+            mappingIndex = find(matchingLikelyhood(x,:) == max(matchingLikelyhood(x,:)));
+            unmappedObjects(unmappedObjects == mappingIndex) = []; 
+            missingObjects(missingObjects == x) = [];
+            matchingLikelyhood(:,mappingIndex) = zeros(size(matchingLikelyhood,1),1);
+            map{x} = [x mappingIndex ];
+        end
 end
 
-% check to ensure  no empty maps
+
 map(cellfun(@isempty,map)) = [];
+
+% if(max(matchingLikelyhood) > 3*minCorrilation)
+%         mappingIndex = find(matchingLikelyhood == max(matchingLikelyhood));
+%         unmappedObjects(unmappedObjects == mappingIndex) = []; 
+%         missingObjects(missingObjects == x) = [];
+%         map{x} = [x mappingIndex max(matchingLikelyhood)];
+%     end
+% check to ensure  no empty maps
+% map(cellfun(@isempty,map)) = [];
 
 %to ensure a strictly one to one relationship
 % for each current object find all of the previous objects it maps to if
-% there are more than one, find the strongest match an eliminate all others
+% there are more than one, find the strongest match and eliminate all others
 % for each eliminated match that is an object that is now missing in the
 % subsiquent frame and as such should be put on the missing object list
 % sort the list at the end
-for x = 1:length(currColorObjects)
-    counter = 1;
-    doubleMappedWeight = [];
-    doubleMapped = [];
-   for y = 1:length(map)
-       if(map{y}(2) == x)
-            doubleMappedWeight(counter) = map{y}(3);
-            doubleMapped(counter) = y;
-            counter = counter +1;
-       end
-   end
-   % find best match, take it off the list and remove all mapings that are
-   % still on the list, then put those mappings on the missing object list
-    bestMatch = find(doubleMappedWeight == max(doubleMappedWeight));
-    doubleMapped(bestMatch) = [];
-    map(doubleMapped) = [];
-    for y = 1:length(doubleMapped)
-       missingObjects(end+1) = doubleMapped(y); 
-    end
-end
+% for x = 1:length(currColorObjects)
+%     counter = 1;
+%     doubleMappedWeight = [];
+%     doubleMapped = [];
+%    for y = 1:length(map)
+%        if(map{y}(2) == x)
+%             doubleMappedWeight(counter) = map{y}(3);
+%             doubleMapped(counter) = y;
+%             counter = counter +1;
+%        end
+%    end
+%    % find best match, take it off the list and remove all mapings that are
+%    % still on the list, then put those mappings on the missing object list
+%     bestMatch = find(doubleMappedWeight == max(doubleMappedWeight));
+%     doubleMapped(bestMatch) = [];
+%     map(doubleMapped) = [];
+%     for y = 1:length(doubleMapped)
+%        missingObjects(end+1) = doubleMapped(y); 
+%     end
+% end
 % sort the missing object list from 0-infinity
-sort(missingObjects,'ascend');
+% sort(missingObjects,'ascend');
 end
 

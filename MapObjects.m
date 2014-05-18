@@ -1,4 +1,4 @@
-function [ transitionholder,groupingsHolder,colorMapHolder ] = MapObjects( currColorObjects,currgroupings,map,unmappedObjects,missingObjects,colorMap,initialize )
+function [ transitionholder,groupingsHolder,colorMapHolder,ObjectCounter ] = MapObjects( currColorObjects,currgroupings,map,unmappedObjects,missingObjects,colorMap,initialize,ObjectCounter )
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -19,7 +19,7 @@ for x = 1:length(map)
    
     transitionholder{map{x}(1)} = currColorObjects{map{x}(2)}; 
     groupingsHolder{map{x}(1)} = currgroupings{map{x}(2)};
-    colorMapHolder{map{x}(1)} = colorMap{map{x}(2)};
+    colorMapHolder{x} = colorMap{x};
     
 end
 counter  = 1;
@@ -31,12 +31,13 @@ if(length(map)+length(missingObjects)<numberOfObjects)
         counter = counter + 1;
         % new object gets a new color
         colorMapHolder{x} = [uint8(rand()*255),uint8(rand()*255),uint8(rand()*255)];
+        ObjectCounter = ObjectCounter+1;
     end
 end
 % remove the missing objects from the display
 transitionholder(missingObjects) = [];
 groupingsHolder(missingObjects) = [];
-colorMapHolder(missingObjects) = [];
+colorMapHolder(cellfun('isempty',colorMapHolder)) = [];% used to match the others 
 
 %for the first run only this will assign every initial object a color for
 %its bounding box
